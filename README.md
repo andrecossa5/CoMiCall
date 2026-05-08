@@ -2,7 +2,7 @@
 
 **Co**nsensus **Mi**tochondrial somatic variant **Ca**lling (**CoMiCall**) from clonal WGS data.
 
-A Nextflow DSL2 pipeline that derives high-confidence mitochondrial single-nucleotide variants (MT-SNVs) from per-colony deduplicated BAMs. Each colony is independently filtered to MT reads, realigned against a NUMT-masked reference, scanned read-by-read for strand-aware base calls, and aggregated into per-donor allelic / coverage tables. A final filtering step yields the confident MT-SNV set together with QC metrics.
+A Nextflow DSL2 pipeline that derives high-confidence mitochondrial single-nucleotide variants (MT-SNVs) from single-cell derived colony Whole Genome Sequencing data (BAMs files). Each sample (colony) is independently filtered to MT reads, realigned against a NUMT-masked reference, scanned read-by-read for strand-aware base calls, and aggregated into per-donor allelic / coverage tables. A final filtering step yields the confident MT-SNV set together with QC metrics.
 
 ## Pipeline
 
