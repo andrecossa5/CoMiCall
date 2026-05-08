@@ -1,0 +1,17 @@
+{
+    "input_folder"  : "/Users/cossa/Desktop/projects/Mito_project/test",
+    "individual"    : "test",
+    "output_folder" : "/Users/cossa/Desktop/projects/Mito_project",
+
+    "ref"           : "/Users/cossa/Desktop/projects/Mito_project/GRCh38.fa",
+    "masked_ref"    : "/Users/cossa/Desktop/projects/Mito_project/GRCh38.numt_masked.fa",
+
+    "region"        : "chrM",
+    "min_mq"        : 30,
+    "min_bq"        : 30,
+    "max_depth"     : 100000,
+    "max_idepth"    : 100000,
+    "max_softclip"  : 0.1,
+
+    "single_molecule" : true
+}
