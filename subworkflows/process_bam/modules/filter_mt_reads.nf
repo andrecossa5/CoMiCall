@@ -17,26 +17,12 @@ process FILTER_MT_READS {
 
     script:
     """
-    REGION="${params.region}"
-    CONTIG="\${REGION%%:*}"
-    HEADER_CONTIGS=\$(samtools view -H ${bam} | awk '\$1=="@SQ"{for(i=2;i<=NF;i++) if(\$i ~ /^SN:/){sub("SN:","",\$i); print \$i}}')
-    if ! echo "\$HEADER_CONTIGS" | grep -qx "\$CONTIG"; then
-        if [ "\$CONTIG" = "chrM" ]; then
-            ALT="MT"
-        elif [ "\$CONTIG" = "MT" ]; then
-            ALT="chrM"
-        else
-            echo "Contig \$CONTIG not in BAM header and no fallback available" >&2
-            exit 1
-        fi
-        if echo "\$HEADER_CONTIGS" | grep -qx "\$ALT"; then
-            REGION="\${ALT}\${REGION#\$CONTIG}"
-        else
-            echo "Neither \$CONTIG nor \$ALT found in BAM header" >&2
-            exit 1
-        fi
+    CONTIG=\$(samtools view -H ${bam} | awk '\$1=="@SQ"{for(i=2;i<=NF;i++) if(\$i ~ /^SN:/){sub("SN:","",\$i); if(\$i=="chrM" || \$i=="MT") print \$i}}' | head -n1)
+    if [ -z "\$CONTIG" ]; then
+        echo "No chrM/MT contig found in BAM header" >&2
+        exit 1
     fi
-    samtools view ${bam} -b -@ ${task.cpus} \$REGION > mitobam.bam
+    samtools view ${bam} -b -@ ${task.cpus} \$CONTIG > mitobam.bam
     samtools index -@ ${task.cpus} mitobam.bam
     """
 

@@ -6,12 +6,18 @@
     "ref"           : "/Users/cossa/Desktop/projects/Mito_project/GRCh38.fa",
     "masked_ref"    : "/Users/cossa/Desktop/projects/Mito_project/GRCh38.numt_masked.fa",
 
-    "region"        : "chrM",
     "min_mq"        : 30,
     "min_bq"        : 30,
-    "max_depth"     : 100000,
-    "max_idepth"    : 100000,
     "max_softclip"  : 0.1,
 
-    "single_molecule" : true
+    "min_strand_ratio"         : 0.1,
+    "max_strand_ratio"         : 9,
+    "af_threshold"             : 0.05,
+    "min_callable_coverage"    : 10,
+    "max_sb_pval"              : 0.05,
+    "max_prevalence_low_AF"    : 0.25,
+    "min_gs_count_low_AF"      : 1,
+    "min_overlap_count_low_AF" : 1,
+    "min_n_mutations"          : 1,
+    "max_prevalence_germline"  : 0.9
 }

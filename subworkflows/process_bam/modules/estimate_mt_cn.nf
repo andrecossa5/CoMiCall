@@ -21,11 +21,17 @@ process ESTIMATE_MT_CN {
 
     script:
     """
+    CONTIG=\$(samtools view -H ${mitobam} | awk '\$1=="@SQ"{for(i=2;i<=NF;i++) if(\$i ~ /^SN:/){sub("SN:","",\$i); if(\$i=="chrM" || \$i=="MT") print \$i}}' | head -n1)
+    if [ -z "\$CONTIG" ]; then
+        echo "No chrM/MT contig found in mitobam header" >&2
+        exit 1
+    fi
+
     nuc=\$(bedtools genomecov -ibam ${nuclear_bam} \\
         | awk '\$1=="genome" && \$2>0 {sum+=\$2*\$3} \$1=="genome"{tot=\$4} END{if(tot>0) print sum/tot; else print 0}')
 
     mt=\$(bedtools genomecov -ibam ${mitobam} \\
-        | awk -v r=${params.region} '\$1==r && \$2>0 {sum+=\$2*\$3} \$1==r{tot=\$4} END{if(tot>0) print sum/tot; else print 0}')
+        | awk -v r=\$CONTIG '\$1==r && \$2>0 {sum+=\$2*\$3} \$1==r{tot=\$4} END{if(tot>0) print sum/tot; else print 0}')
 
     cn=\$(awk -v m=\$mt -v n=\$nuc 'BEGIN{ if(n>0) print (m/n)*2; else print 0 }')
 

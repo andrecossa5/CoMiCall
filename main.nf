@@ -26,20 +26,13 @@ if (params.help) {
 
     REFERENCE OPTIONS:
         --ref              Faidx-indexed reference FASTA containing chrM
-                           (used by make_tables / mpileup)  (REQUIRED)
+                           (used by make_tables) (REQUIRED)
         --masked_ref       NUMT-masked, bwa-indexed full-genome FASTA — see
-                           code/mask_numts.sh. Required only when
-                           --single_molecule true (REALIGN_MT_READS target).
+                           code/mask_numts.sh (REALIGN_MT_READS target) (REQUIRED).
 
-    QUALITY / DEPTH OPTIONS (shared by both modes):
-        --region           Genomic region to pileup (default: ${params.region})
+    QUALITY / DEPTH OPTIONS:
         --min_mq           Minimum mapping quality (default: ${params.min_mq})
         --min_bq           Minimum base quality (default: ${params.min_bq})
-        --max_depth        Max per-file depth, default mode only (default: ${params.max_depth})
-        --max_idepth       Max per-file depth for INDELs, default mode only (default: ${params.max_idepth})
-
-    SINGLE-MOLECULE MODE:
-        --single_molecule  Enable single-molecule base-calls (default: ${params.single_molecule})
         --max_softclip     Max fraction of softclipped bases per read in
                            make_tables Phase-1 filter (default: ${params.max_softclip})
 
@@ -80,9 +73,7 @@ if (!params.help && !params.version) {
     if (!params.individual)    error "Error: --individual is required. Use --help for usage information."
     if (!params.output_folder) error "Error: --output_folder is required. Use --help for usage information."
     if (!params.ref)           error "Error: --ref is required. Use --help for usage information."
-    if (params.single_molecule && !params.masked_ref) {
-        error "Error: --masked_ref is required when --single_molecule is true (NUMT-masked, bwa-indexed full genome; see code/mask_numts.sh)."
-    }
+    if (!params.masked_ref)    error "Error: --masked_ref is required (NUMT-masked, bwa-indexed full genome; see code/mask_numts.sh)."
 }
 
 
