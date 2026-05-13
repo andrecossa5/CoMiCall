@@ -19,7 +19,6 @@ def parse_args():
     p.add_argument('--coverage_table', required=True, help='Per-donor coverage table (tsv.gz)')
     p.add_argument('--ref',            required=True, help='Faidx-indexed reference FASTA')
     p.add_argument('--donor',          required=True, help='Donor identifier')
-
     p.add_argument('--min_strand_ratio',         type=float, default=0.1)
     p.add_argument('--max_strand_ratio',         type=float, default=9)
     p.add_argument('--af_threshold',             type=float, default=0.05)
@@ -144,12 +143,12 @@ def main():
     n_muts_per_sample = df_filtered.groupby('sample')['MUT'].nunique()
     median = n_muts_per_sample.median()
     mad = np.median(np.abs(n_muts_per_sample - median))
-    outlier_samples = (
+    chosen_samples = (
         n_muts_per_sample
         .loc[lambda x: (x>=args.min_n_mutations) & (x<=median + 5*mad)]
         .index
     )
-    df_filtered = df_filtered.loc[~df_filtered['sample'].isin(outlier_samples)].copy()
+    df_filtered = df_filtered.loc[df_filtered['sample'].isin(chosen_samples)].copy()
 
     n_samples = df_filtered['sample'].nunique()
     df_filtered.drop(columns=['n_samples', 'prevalence'], inplace=True)
