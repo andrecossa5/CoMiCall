@@ -19,8 +19,8 @@ def parse_args():
     p.add_argument('--coverage_table', required=True, help='Per-donor coverage table (tsv.gz)')
     p.add_argument('--ref',            required=True, help='Faidx-indexed reference FASTA')
     p.add_argument('--donor',          required=True, help='Donor identifier')
-    p.add_argument('--min_strand_ratio',         type=float, default=0.1)
-    p.add_argument('--max_strand_ratio',         type=float, default=0.9)
+    p.add_argument('--min_strand_ratio',         type=float, default=0.05)
+    p.add_argument('--max_strand_ratio',         type=float, default=0.95)
     p.add_argument('--af_threshold',             type=float, default=0.05)
     p.add_argument('--min_callable_coverage',    type=float, default=10)
     p.add_argument('--max_sb_pval',              type=float, default=0.05)
@@ -118,15 +118,15 @@ def main():
 
     # Stage I: base filtering on summary stats
     df_high_AF = df.loc[
-        # (df['strand_ratio']>=args.min_strand_ratio) &
-        # (df['strand_ratio']<=args.max_strand_ratio) &
+        (df['strand_ratio']>=args.min_strand_ratio) &
+        (df['strand_ratio']<=args.max_strand_ratio) &
         (df['AF']>=args.af_threshold) &
         (df['callable_coverage']>=args.min_callable_coverage) &
         (df['sb_pval']>=args.max_sb_pval)
     ]
     df_low_AF = df.loc[
-        # (df['strand_ratio']>=args.min_strand_ratio) &
-        # (df['strand_ratio']<=args.max_strand_ratio) &
+        (df['strand_ratio']>=args.min_strand_ratio) &
+        (df['strand_ratio']<=args.max_strand_ratio) &
         (df['AF']<args.af_threshold) &
         (df['prevalence']<=args.max_prevalence_low_AF) &
         (df['gs>1_count']>=args.min_gs_count_low_AF) &
