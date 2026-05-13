@@ -158,7 +158,7 @@ def main():
     # Stage II: exclude MT-SNVs with too variable AF in positive samples
     exclude = (
         df_filtered.groupby('MUT')['AF']
-        .apply(lambda x: x.max() / x.min()).loc[lambda x: x>5]
+        .apply(lambda x: x.max() / x.min()).loc[lambda x: x>10]
         .index
     )
     df_filtered = df_filtered.loc[~df_filtered['MUT'].isin(exclude)].copy()
