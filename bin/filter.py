@@ -143,13 +143,13 @@ def main():
     n_muts_per_sample = df_filtered.groupby('sample')['MUT'].nunique()
     median = n_muts_per_sample.median()
     mad = np.median(np.abs(n_muts_per_sample - median))
+    max_threshold = median + 10*mad
     chosen_samples = (
         n_muts_per_sample
-        .loc[lambda x: (x>=args.min_n_mutations) & (x<=median + 5*mad)]
+        .loc[lambda x: (x>=args.min_n_mutations) & (x<=max_threshold)]
         .index
     )
     df_filtered = df_filtered.loc[df_filtered['sample'].isin(chosen_samples)].copy()
-
     n_samples = df_filtered['sample'].nunique()
     df_filtered.drop(columns=['n_samples', 'prevalence'], inplace=True)
     df_filtered = df_filtered.merge(df_filtered.groupby('MUT').size().to_frame('n_samples').reset_index(), on='MUT', how='left')
@@ -162,7 +162,6 @@ def main():
         .index
     )
     df_filtered = df_filtered.loc[~df_filtered['MUT'].isin(exclude)].copy()
-
     df_filtered.to_csv(f'{donor}.confident_allelic_table.tsv.gz', sep='\t', index=False)
 
     # Stage III: germline
@@ -170,7 +169,6 @@ def main():
     metrics['n_filtered_samples'] = df_filtered['sample'].nunique()
     metrics['n_filtered_calls']   = df_filtered.shape[0]
     metrics['n_filtered_muts']    = df_filtered['MUT'].nunique()
-
     df_filtered.to_csv(f'{donor}.final_allelic_table.tsv.gz', sep='\t', index=False)
 
     (
