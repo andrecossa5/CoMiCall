@@ -118,15 +118,15 @@ def main():
 
     # Stage I: base filtering on summary stats
     df_high_AF = df.loc[
-        (df['strand_ratio']>=args.min_strand_ratio) &
-        (df['strand_ratio']<=args.max_strand_ratio) &
+        # (df['strand_ratio']>=args.min_strand_ratio) &
+        # (df['strand_ratio']<=args.max_strand_ratio) &
         (df['AF']>=args.af_threshold) &
         (df['callable_coverage']>=args.min_callable_coverage) &
         (df['sb_pval']>=args.max_sb_pval)
     ]
     df_low_AF = df.loc[
-        (df['strand_ratio']>=args.min_strand_ratio) &
-        (df['strand_ratio']<=args.max_strand_ratio) &
+        # (df['strand_ratio']>=args.min_strand_ratio) &
+        # (df['strand_ratio']<=args.max_strand_ratio) &
         (df['AF']<args.af_threshold) &
         (df['prevalence']<=args.max_prevalence_low_AF) &
         (df['gs>1_count']>=args.min_gs_count_low_AF) &
