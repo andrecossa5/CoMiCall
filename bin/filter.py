@@ -143,7 +143,7 @@ def main():
     n_muts_per_sample = df_filtered.groupby('sample')['MUT'].nunique()
     median = n_muts_per_sample.median()
     mad = np.median(np.abs(n_muts_per_sample - median))
-    max_threshold = median + 10*mad
+    max_threshold = median + 5*mad
     chosen_samples = (
         n_muts_per_sample
         .loc[lambda x: (x>=args.min_n_mutations) & (x<=max_threshold)]
