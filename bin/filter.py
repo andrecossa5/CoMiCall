@@ -115,6 +115,7 @@ def main():
     n_samples = df['sample'].nunique()
     df = df.merge(df.groupby('MUT').size().to_frame('n_samples').reset_index(), on='MUT', how='left')
     df = df.merge((df.groupby('MUT').size() / n_samples).to_frame('prevalence').reset_index(), on='MUT', how='left')
+    df.to_csv(f'{donor}.annotated_allelic_table.tsv.gz', sep='\t', index=False)
 
     # Stage I: base filtering on summary stats
     df_high_AF = df.loc[
