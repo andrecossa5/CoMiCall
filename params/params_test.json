@@ -11,8 +11,8 @@
     "max_softclip"  : 0.1,
 
     "min_strand_ratio"         : 0.1,
-    "max_strand_ratio"         : 0.9,
-    "af_threshold"             : 0.05,
+    "max_strand_ratio"         : 10,
+    "af_threshold"             : 0.01,
     "min_callable_coverage"    : 10,
     "max_sb_pval"              : 0.05,
     "max_prevalence_low_AF"    : 0.25,
