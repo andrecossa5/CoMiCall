@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 ##############################################################################
 # refilter_all.sh
-#   Re-run bin/filter.py on every <DONOR>/ subfolder of a results directory.
-#   For each donor, writes confident_allelic_table / final_allelic_table /
-#   metrics inside that donor's folder (alongside the existing tables).
+#   Re-run bin/filter.py (then bin/genotype.py) on every <DONOR>/ subfolder
+#   of a results directory. For each donor, writes annotated_allelic_table /
+#   confident_allelic_table / metrics / genotyped_allelic_table inside that
+#   donor's folder (alongside the existing tables).
 #
 # Usage:
 #   refilter_all.sh <results_dir> <ref.fa> [extra filter.py args...]
+#
+# Note: extra args are forwarded only to filter.py. genotype.py uses defaults.
 ##############################################################################
 set -euo pipefail
 
@@ -21,13 +24,15 @@ REF=$2           # faidx-indexed FASTA used by filter.py (3nt context)
 shift 2
 EXTRA=( "$@" )   # forwarded verbatim to filter.py (threshold overrides etc.)
 
-# Hard-coded path to the filter script — keep aligned with pipeline layout
+# Hard-coded paths to the scripts — keep aligned with pipeline layout
 FILTER_PY="/lustre/scratch126/cellgen/behjati/ac87/MT_chemo/CoMiCall/bin/filter.py"
+GENOTYPE_PY="/lustre/scratch126/cellgen/behjati/ac87/MT_chemo/CoMiCall/bin/genotype.py"
 
 # --- Sanity checks ----------------------------------------------------------
 [[ -d "$RESULTS_DIR" ]] || { echo "ERROR: not a directory: $RESULTS_DIR" >&2; exit 2; }
 [[ -r "$REF" ]]         || { echo "ERROR: cannot read ref: $REF" >&2; exit 2; }
 [[ -r "$FILTER_PY" ]]   || { echo "ERROR: cannot find $FILTER_PY" >&2; exit 2; }
+[[ -r "$GENOTYPE_PY" ]] || { echo "ERROR: cannot find $GENOTYPE_PY" >&2; exit 2; }
 
 # --- Build donor list (skip non-dirs and donors missing inputs) -------------
 donor_dirs=()
@@ -62,7 +67,11 @@ for donor_dir in "${donor_dirs[@]}"; do
          --coverage_table "${donor}.coverage_table.tsv.gz" \
          --ref            "$REF" \
          --donor          "$donor" \
-         "${EXTRA[@]}" ); then
+         "${EXTRA[@]}" \
+       && python "$GENOTYPE_PY" \
+         --annotated_allelic_table "${donor}.annotated_allelic_table.tsv.gz" \
+         --confident_allelic_table "${donor}.confident_allelic_table.tsv.gz" \
+         --donor                   "$donor" ); then
     ok=$(( ok + 1 ))
   else
     echo "  FAILED $donor"
