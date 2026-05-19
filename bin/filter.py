@@ -28,7 +28,6 @@ def parse_args():
     p.add_argument('--min_gs_count_low_AF',      type=int,   default=1)
     p.add_argument('--min_overlap_count_low_AF', type=int,   default=1)
     p.add_argument('--min_n_mutations',          type=int,   default=1)
-    p.add_argument('--max_prevalence_germline',  type=float, default=0.9)
 
     return p.parse_args()
 
@@ -137,7 +136,7 @@ def main():
     ]
     metrics['n_high_AF_muts'] = df_high_AF['MUT'].nunique()
     metrics['n_low_AF_muts']  = df_low_AF['MUT'].nunique()
-
+    
     df_filtered = pd.concat([df_high_AF, df_low_AF]).drop_duplicates()
 
     # Stage II: remove outlier samples
@@ -156,22 +155,10 @@ def main():
     df_filtered = df_filtered.merge(df_filtered.groupby('MUT').size().to_frame('n_samples').reset_index(), on='MUT', how='left')
     df_filtered = df_filtered.merge((df_filtered.groupby('MUT').size() / n_samples).to_frame('prevalence').reset_index(), on='MUT', how='left')
 
-    # Stage II: exclude MT-SNVs with too variable AF in positive samples
-    exclude = (
-        df_filtered.groupby('MUT')['AF']
-        .apply(lambda x: x.max() / x.min()).loc[lambda x: x>10]
-        .index
-    )
-    df_filtered = df_filtered.loc[~df_filtered['MUT'].isin(exclude)].copy()
+    # Save confident calls after outlier removal
     df_filtered.to_csv(f'{donor}.confident_allelic_table.tsv.gz', sep='\t', index=False)
 
-    # Stage III: germline
-    df_filtered = df_filtered.loc[df_filtered['prevalence']<=args.max_prevalence_germline].copy()
-    metrics['n_filtered_samples'] = df_filtered['sample'].nunique()
-    metrics['n_filtered_calls']   = df_filtered.shape[0]
-    metrics['n_filtered_muts']    = df_filtered['MUT'].nunique()
-    df_filtered.to_csv(f'{donor}.final_allelic_table.tsv.gz', sep='\t', index=False)
-
+    # Save metrics
     (
         pd.DataFrame(
             [(donor, k, v) for k, v in metrics.items()],

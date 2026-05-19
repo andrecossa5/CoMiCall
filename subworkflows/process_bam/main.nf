@@ -9,6 +9,7 @@ include { MAKE_TABLES }               from "./modules/make_tables.nf"
 include { ESTIMATE_MT_CN }            from "./modules/estimate_mt_cn.nf"
 include { GATHER_TABLES }             from "./modules/gather_tables.nf"
 include { FILTER_MUTS }               from "./modules/filter_muts.nf"
+include { GENOTYPE_MT }               from "./modules/genotype_mt.nf"
 
 
 //
@@ -50,8 +51,14 @@ workflow process_bam {
         GATHER_TABLES(all_tables_ch, mt_cn_ch)
         FILTER_MUTS(GATHER_TABLES.out.output)
 
+        // Genotype using the annotated + confident tables
+        genotype_input_ch = FILTER_MUTS.out.filtered
+            .map { annotated, confident, metrics -> tuple(annotated, confident) }
+        GENOTYPE_MT(genotype_input_ch)
+
     emit:
-        output = FILTER_MUTS.out.filtered
+        output    = FILTER_MUTS.out.filtered
+        genotyped = GENOTYPE_MT.out.genotyped
 
 }
 

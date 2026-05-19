@@ -80,7 +80,6 @@ All parameters can be set via `--<name> <value>` on the CLI or through a JSON fi
 | `min_gs_count_low_AF`       | `1`     | Min `gs>1_count` evidence required for low-AF calls               |
 | `min_overlap_count_low_AF`  | `1`     | Min `overlap_count` evidence required for low-AF calls            |
 | `min_n_mutations`           | `1`     | Min number of MT-SNVs per sample for outlier-trim retention       |
-| `max_prevalence_germline`   | `0.9`   | Drop variants above this prevalence as germline (Stage III)       |
 
 ## Outputs
 
@@ -90,7 +89,8 @@ Published under `${output_folder}/${individual}/`:
 - `${individual}.coverage_table.tsv.gz` — pooled per-donor coverage table
 - `${individual}.mt_cn.tsv.gz` — per-colony mtDNA copy-number estimates
 - `${individual}.confident_allelic_table.tsv.gz` — post Stage I+II filtered calls
-- `${individual}.final_allelic_table.tsv.gz` — confident calls with germline removed
+- `${individual}.annotated_allelic_table.tsv.gz` — pre-filter annotated allelic table (3nt context, prevalence)
+- `${individual}.genotyped_allelic_table.tsv.gz` — per-sample genotyped alleles (gap-based on annotated AF distribution)
 - `${individual}.metrics.txt` — long-format `donor / metric / value` QC summary
 
 ## Stub / dry run

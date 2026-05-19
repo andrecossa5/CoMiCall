@@ -14,8 +14,8 @@ process FILTER_MUTS {
     tuple path(allelic_table), path(coverage_table), path(mt_cn)
 
     output:
-    tuple path("${params.individual}.confident_allelic_table.tsv.gz"),
-          path("${params.individual}.final_allelic_table.tsv.gz"),
+    tuple path("${params.individual}.annotated_allelic_table.tsv.gz"),
+          path("${params.individual}.confident_allelic_table.tsv.gz"),
           path("${params.individual}.metrics.txt"), emit: filtered
 
     script:
@@ -33,14 +33,13 @@ process FILTER_MUTS {
         --max_prevalence_low_AF    ${params.max_prevalence_low_AF} \\
         --min_gs_count_low_AF      ${params.min_gs_count_low_AF} \\
         --min_overlap_count_low_AF ${params.min_overlap_count_low_AF} \\
-        --min_n_mutations          ${params.min_n_mutations} \\
-        --max_prevalence_germline  ${params.max_prevalence_germline}
+        --min_n_mutations          ${params.min_n_mutations}
     """
 
     stub:
     """
+    touch ${params.individual}.annotated_allelic_table.tsv.gz
     touch ${params.individual}.confident_allelic_table.tsv.gz
-    touch ${params.individual}.final_allelic_table.tsv.gz
     touch ${params.individual}.metrics.txt
     """
 
